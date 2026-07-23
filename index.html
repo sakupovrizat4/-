@@ -213,8 +213,9 @@
   <div class="app" id="app">
     <aside>
       <div class="brand"><span class="brand-mark">R</span> Беговой ритм</div>
-      <nav class="nav" aria-label="Разделы кабинета">
+<nav class="nav" aria-label="Разделы кабинета">
         <button class="active" data-page="dashboard"><span class="icon">⌂</span><span class="text">Обзор</span></button>
+        <button data-page="plan"><span class="icon">📋</span><span class="text">План</span></button>
         <button data-page="training"><span class="icon">⌁</span><span class="text">Тренировки</span></button>
         <button data-page="history"><span class="icon">◷</span><span class="text">История</span></button>
         <button data-page="progress"><span class="icon">↗</span><span class="text">Прогресс</span></button>
@@ -247,6 +248,19 @@
         </div>
         <div class="section-title"><h2>Последние тренировки</h2><button class="btn secondary small" data-page-target="history">Вся история</button></div>
         <article class="card"><div class="activity-list" id="recent-activities"></div></article>
+      </section>
+
+      <section class="page" id="plan">
+        <div class="topline"><div><h1>План тренировок</h1><p>Сгенерируй план под свою цель и уровень.</p></div></div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+          <button class="btn secondary plan-goal-btn" data-goal="5k">5 км</button>
+          <button class="btn secondary plan-goal-btn" data-goal="10k">10 км</button>
+          <button class="btn secondary plan-goal-btn" data-goal="half">21,1 км</button>
+          <button class="btn secondary plan-goal-btn" data-goal="marathon">42,2 км</button>
+        </div>
+        <div id="plan-info" style="margin-top:12px"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="generate-plan-btn">Сгенерировать план</button><button class="btn secondary" id="clear-plan-btn">Очистить план</button></div>
+        <div id="plan-weeks" style="margin-top:24px"></div>
       </section>
 
       <section class="page" id="training">
@@ -304,6 +318,15 @@
         <div class="topline"><div><h1>Профиль и интеграции</h1><p>Настрой данные, которые помогают сделать план точнее.</p></div></div>
         <div class="grid profile-grid"><article class="card strava-card"><div class="eyebrow" style="color:#fff4ed">Интеграция</div><h2 style="font-size:25px;margin:9px 0">Strava</h2><p>Импортируй пробежки: дистанцию, время, темп, набор, пульс и маршрут — если они доступны.</p><div class="connection"><div><b id="strava-status">Не подключено</b><small id="strava-date">Подключите аккаунт, чтобы начать</small></div><span>◉</span></div><button class="btn light" id="strava-connect">Подключить Strava</button><button class="btn light" id="strava-sync" style="display:none">Синхронизировать сейчас</button><button class="btn light" id="strava-disconnect" style="display:none;margin-left:7px">Отключить</button></article>
           <article class="card"><div class="card-head"><div><h2>Настройки синхронизации</h2><p class="tiny">Связанные тренировки всегда можно подтвердить или отменить вручную.</p></div></div><label class="switch"><input id="auto-sync" type="checkbox" checked /><span>Синхронизировать автоматически</span></label><div class="progress-row" style="margin-top:17px"><div><h3>Сопоставление с планом</h3><p class="tiny">Импортированная пробежка сверяется с датой, дистанцией и типом тренировки.</p></div><b>Включено</b></div><div class="progress-row"><div><h3>Импорт пульса</h3><p class="tiny">Средний и максимальный пульс, плюс время по зонам, если доступно.</p></div><b>Включено</b></div><div class="notice" style="margin-top:17px"><span>🔒</span><div><b>Демо-интеграция.</b><br>Кнопка показывает сценарий подключения. Для рабочего OAuth нужны зарегистрированное приложение Strava, серверный обмен токенами и политика обработки данных.</div></div></article></div>
+        <div class="section-title"><h2>План тренировок</h2><span class="tiny">Выбери цель — план сгенерируется автоматически.</span></div>
+        <div class="grid" style="grid-template-columns:repeat(auto-fit,minmax(220px,1fr))">
+          <button class="btn secondary plan-goal-btn" data-goal="5k">5 км</button>
+          <button class="btn secondary plan-goal-btn" data-goal="10k">10 км</button>
+          <button class="btn secondary plan-goal-btn" data-goal="half">21,1 км</button>
+          <button class="btn secondary plan-goal-btn" data-goal="marathon">42,2 км</button>
+        </div>
+        <div id="plan-info" style="margin-top:12px"></div>
+        <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="generate-plan-btn">Сгенерировать план</button><button class="btn secondary" id="clear-plan-btn">Очистить план</button></div>
         <div class="section-title"><h2>Создатель проекта</h2><span class="tiny">Публичные ссылки и фото настраиваются владельцем сайта.</span></div>
         <article class="card"><div class="creator-card"><div class="admin-avatar" id="admin-avatar">RS</div><div><h2 id="admin-name">Rizat Sakupov</h2><p>Создатель сайта «Беговой ритм»</p><div class="creator-links" id="creator-links"></div></div></div><div class="form-grid" style="margin-top:20px"><label>Instagram — публичная ссылка<input id="admin-instagram" type="url" placeholder="https://instagram.com/..." /></label><label>Strava — публичная ссылка<input id="admin-strava" type="url" placeholder="https://www.strava.com/athletes/..." /></label></div><div style="display:flex;gap:9px;flex-wrap:wrap;margin-top:13px"><input id="admin-photo-input" type="file" accept="image/*" hidden><button class="btn secondary small" id="admin-photo-button">Добавить фото администратора</button><button class="btn small" id="admin-links-save">Сохранить ссылки</button></div><p class="tiny" style="margin-top:10px">Instagram подключён как публичная ссылка. Данные тренировок подтягиваются через защищённое подключение аккаунта, а не со страницы профиля.</p></article>
         <div class="section-title"><h2>Достижения</h2><span class="tiny">Небольшие вехи помогают поддерживать регулярность.</span></div><article class="card"><div class="achievement-list"><div class="achievement"><span class="emoji">👟</span><b>Первая пробежка</b><br><span class="tiny">Получено</span></div><div class="achievement"><span class="emoji">5K</span><b>Первый 5 км</b><br><span class="tiny">Получено</span></div><div class="achievement"><span class="emoji">🔥</span><b>4 недели регулярно</b><br><span class="tiny">Получено</span></div><div class="achievement locked"><span class="emoji">10K</span><b>Первый 10 км</b><br><span class="tiny">Впереди</span></div></div></article>
@@ -428,12 +451,110 @@
       if(e.target.id==='site-photo-input'){const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{state.admin.photo=r.result;save();renderAdmin();renderAdminPanel('site-settings');toast('Фото администратора сохранено.')};r.readAsDataURL(f)}
     });
     function logAdmin(action,details){const logs=JSON.parse(localStorage.getItem('br_logs')||'[]');logs.push({action,details,userId:authUser?.email,timestamp:new Date().toISOString()});localStorage.setItem('br_logs',JSON.stringify(logs))}
-    if(authUser&&authUser.role==='admin')document.getElementById('nav-admin').style.display='';
-    else{const na=document.getElementById('nav-admin');if(na)na.style.display='none'}
-    document.getElementById('logout-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
-    document.getElementById('switch-account-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
-    buildScale();renderAll();
-    if(authUser)renderAdminPanel('overview');
+    /* ===== TRAINING PLANS ===== */
+    const PLAN_WEEKS = { '5k': 8, '10k': 10, 'half': 12, 'marathon': 16 };
+    const GOAL_LABELS = { '5k': '5 км', '10k': '10 км', 'half': '21,1 км', 'marathon': '42,2 км' };
+    const GOAL_DIST = { '5k': 5, '10k': 10, 'half': 21.1, 'marathon': 42.2 };
+    let selectedGoal = state.profile?.goal || null;
+
+    function generatePlan(goal) {
+      const weeks = PLAN_WEEKS[goal];
+      const goalDist = GOAL_DIST[goal];
+      const z = getZones();
+      const z1 = z.zones[0][0]+'–'+z.zones[0][1];
+      const z2 = z.zones[1][0]+'–'+z.zones[1][1];
+      const z3 = z.zones[2][0]+'–'+z.zones[2][1];
+      const z4 = z.zones[3][0]+'–'+z.zones[3][1];
+      const base = { '5k': { long: 6, easy: 4, tempo: 3, interval: 3 },
+                     '10k': { long: 9, easy: 5, tempo: 4, interval: 4 },
+                     'half': { long: 15, easy: 6, tempo: 5, interval: 4 },
+                     'marathon': { long: 22, easy: 7, tempo: 6, interval: 5 } }[goal];
+      const plan = { goal, weeks: [], created: new Date().toISOString() };
+      const today = new Date(); today.setHours(0,0,0,0);
+      const startMon = new Date(today); startMon.setDate(today.getDate() - ((today.getDay()+6)%7));
+      const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+      for (let w = 1; w <= weeks; w++) {
+        const week = [];
+        const progression = w <= weeks * 0.7 ? 1 + (w / (weeks * 0.7)) * 0.3 : 1.3 - ((w - weeks * 0.7) / (weeks * 0.3)) * 0.3;
+        const mon = new Date(startMon); mon.setDate(startMon.getDate() + (w-1)*7);
+        const types = ['easy','tempo','rest','interval','easy','long','rest'];
+        types.forEach((type, i) => {
+          const d = new Date(mon); d.setDate(mon.getDate() + i);
+          const dateStr = d.toISOString().slice(0,10);
+          let workout = { date: dateStr, day: days[i], type, week: w };
+          switch(type) {
+            case 'easy': workout = { ...workout, name: 'Лёгкий бег', distance: Math.round(base.easy * progression * 10)/10, zone: 'Z2', zones: z2 }; break;
+            case 'tempo': workout = { ...workout, name: 'Темповый бег', distance: Math.round(base.tempo * progression * 10)/10, zone: 'Z3', zones: z3 }; break;
+            case 'interval': workout = { ...workout, name: 'Интервалы', distance: Math.round(base.interval * progression * 10)/10, zone: 'Z4', zones: z4 }; break;
+            case 'long': workout = { ...workout, name: 'Длинная пробежка', distance: Math.round(base.long * progression * 10)/10, zone: 'Z2', zones: z1 }; break;
+            case 'rest': workout = { ...workout, name: 'Отдых', distance: 0, zone: '—', zones: '—' }; break;
+          }
+          week.push(workout);
+        });
+        plan.weeks.push(week);
+      }
+      return plan;
+    }
+
+function renderPlanInfo() {
+      const el = document.getElementById('plan-info');
+      if (!el) return;
+      if (state.plan) {
+        const p = state.plan;
+        el.innerHTML = `<div class="notice" style="margin-top:10px"><span>✓</span><div><b>Активный план: ${GOAL_LABELS[p.goal] || p.goal}</b><br>${p.weeks.length} недель · Создан ${new Date(p.created).toLocaleDateString('ru-RU')}</div></div>`;
+      } else {
+        el.innerHTML = `<p class="tiny" style="color:var(--muted)">План не создан. Выбери цель и нажми «Сгенерировать план».</p>`;
+      }
+    }
+
+    function renderPlanWeeks() {
+      const el = document.getElementById('plan-weeks');
+      if (!el || !state.plan) { if(el) el.innerHTML = ''; return; }
+      const p = state.plan;
+      let html = '<div class="section-title"><h2>Недели плана</h2></div>';
+      p.weeks.forEach((week, wi) => {
+        html += `<article class="card" style="margin-bottom:12px"><div class="card-head"><div><h2>Неделя ${wi+1}</h2></div></div><div class="activity-list">`;
+        week.forEach(s => {
+          const dist = s.distance ? `${s.distance} км` : '—';
+          const dur = s.distance ? `~${Math.round(s.distance*6.5)} мин` : '—';
+          const badge = s.type==='rest' ? '<span class="tag">Отдых</span>' : `<span class="tag">${s.zone}</span>`;
+          html += `<div class="activity"><div class="run-dot">${s.type==='long'?'⌁':s.type==='interval'?'⌁':'⌁'}</div><div><strong>${s.name}</strong><span>${s.day} · ${dist} · ${dur} · ${s.zones} уд/мин</span></div><div class="side">${badge}</div></div>`;
+        });
+        html += '</div></article>';
+      });
+      el.innerHTML = html;
+    }
+
+    function renderAll(){renderZones();renderDashboard();renderActivityList();renderTraining();renderHistory();renderProgress();renderStrava();renderAdmin();renderPlanInfo();renderPlanWeeks();if(authUser)renderAdminPanel('overview');}
+
+    function initPlanButtons() {
+      document.querySelectorAll('.plan-goal-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.plan-goal-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedGoal = btn.dataset.goal;
+        });
+        if (btn.dataset.goal === selectedGoal) btn.classList.add('selected');
+      });
+      document.getElementById('generate-plan-btn')?.addEventListener('click', () => {
+        if (!selectedGoal) { toast('Выбери цель (5к/10к/21.1/42.2)'); return; }
+        state.plan = generatePlan(selectedGoal);
+        state.profile.goal = selectedGoal;
+        save();
+        renderPlanInfo();
+        renderPlanWeeks();
+        renderDashboard();
+        toast(`План на ${GOAL_LABELS[selectedGoal]} создан (${state.plan.weeks.length} недель)`);
+      });
+      document.getElementById('clear-plan-btn')?.addEventListener('click', () => {
+        delete state.plan;
+        save();
+        renderPlanInfo();
+        renderPlanWeeks();
+        toast('План удалён');
+      });
+    }
+    initPlanButtons();
   </script>
 </body>
 </html>
