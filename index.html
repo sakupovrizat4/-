@@ -331,13 +331,13 @@
     function getSession(){try{return JSON.parse(localStorage.getItem(br_session_key))}catch{return null}}
     function saveSession(s){localStorage.setItem(br_session_key,JSON.stringify(s))}
     function seedUser(){if(getUsers().length===0){saveUsers([{id:'u1',name:'Rizat Sakupov',email:'sakupovrizat4@gmail.com',password:hashPw('48526480r'),role:'admin'}])}}
-    function doAuth(){const s=getSession();if(s){const u=getUsers().find(x=>x.email===s.email);if(u){document.getElementById('auth-screen').style.display='none';return u}}return null}
+    function doAuth(){const s=getSession();if(s){const u=getUsers().find(x=>x.email===s.email);if(u){document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';return u}}return null}
     seedUser();
     let authUser=doAuth();
-    document.getElementById('auth-toggle').addEventListener('click',function(){this.textContent=this.textContent.includes('Нет')?'Уже есть аккаунт? Войти':'Нет аккаунта? Зарегистрироваться'});
-    document.getElementById('auth-btn').addEventListener('click',function(){const em=document.getElementById('auth-email').value,pw=document.getElementById('auth-pw').value,err=document.getElementById('auth-error');if(!em||!pw){err.textContent='Заполните все поля';err.style.display='block';return}const users=getUsers();const reg=document.getElementById('auth-toggle').textContent.includes('Уже');if(reg){if(users.find(u=>u.email===em)){err.textContent='Email уже зарегистрирован';err.style.display='block';return}const u={id:'u'+Date.now(),name:em.split('@')[0],email:em,password:hashPw(pw),role:'user'};users.push(u);saveUsers(users);saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';renderAll();toast('Аккаунт создан! Добро пожаловать.')}else{const u=users.find(x=>x.email===em);if(!u||u.password!==hashPw(pw)){err.textContent='Неверный email или пароль';err.style.display='block';return}saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';renderAll();toast('Добро пожаловать, '+u.name+'!')}});
-    document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-btn').click()});
     if(!authUser){document.getElementById('app').style.display='none'}
+    document.getElementById('auth-toggle').addEventListener('click',function(){this.textContent=this.textContent.includes('Нет')?'Уже есть аккаунт? Войти':'Нет аккаунта? Зарегистрироваться'});
+    document.getElementById('auth-btn').addEventListener('click',function(){const em=document.getElementById('auth-email').value,pw=document.getElementById('auth-pw').value,err=document.getElementById('auth-error');if(!em||!pw){err.textContent='Заполните все поля';err.style.display='block';return}const users=getUsers();const reg=document.getElementById('auth-toggle').textContent.includes('Уже');if(reg){if(users.find(u=>u.email===em)){err.textContent='Email уже зарегистрирован';err.style.display='block';return}const u={id:'u'+Date.now(),name:em.split('@')[0],email:em,password:hashPw(pw),role:'user'};users.push(u);saveUsers(users);saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Аккаунт создан! Добро пожаловать.')}else{const u=users.find(x=>x.email===em);if(!u||u.password!==hashPw(pw)){err.textContent='Неверный email или пароль';err.style.display='block';return}saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Добро пожаловать, '+u.name+'!')}});
+    document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-btn').click()});
     /* ===== APP ===== */
     const key = 'running-rhythm-v1';
     const initialWorkouts = [
@@ -431,10 +431,8 @@
     if(authUser&&authUser.role==='admin')document.getElementById('nav-admin').style.display='';
     else{const na=document.getElementById('nav-admin');if(na)na.style.display='none'}
     document.getElementById('logout-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
-document.getElementById('switch-account-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
-if(authUser&&authUser.role==='admin')document.getElementById('nav-admin').style.display='';
-else{const na=document.getElementById('nav-admin');if(na)na.style.display='none'}
-buildScale();renderAll();
+    document.getElementById('switch-account-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
+    buildScale();renderAll();
     if(authUser)renderAdminPanel('overview');
   </script>
 </body>
