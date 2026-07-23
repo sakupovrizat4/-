@@ -224,6 +224,10 @@
         <button data-page="admin" id="nav-admin"><span class="icon">⚙</span><span class="text">Админ-панель</span></button>
       </nav>
       <div class="aside-bottom"><span class="profile-dot"></span><span id="aside-user">Rizat Sakupov</span> · план на 10 км<br><span class="tiny">Неделя 6 из 12</span></div>
+      <div class="auth-panel" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px">
+        <button class="btn secondary small" id="logout-btn">🚪 Выйти</button>
+        <button class="btn light small" id="switch-account-btn">👤 Сменить аккаунт</button>
+      </div>
     </aside>
 
     <main>
@@ -426,7 +430,11 @@
     function logAdmin(action,details){const logs=JSON.parse(localStorage.getItem('br_logs')||'[]');logs.push({action,details,userId:authUser?.email,timestamp:new Date().toISOString()});localStorage.setItem('br_logs',JSON.stringify(logs))}
     if(authUser&&authUser.role==='admin')document.getElementById('nav-admin').style.display='';
     else{const na=document.getElementById('nav-admin');if(na)na.style.display='none'}
-    buildScale();renderAll();
+    document.getElementById('logout-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
+document.getElementById('switch-account-btn')?.addEventListener('click',()=>{localStorage.removeItem('br_session');location.reload()});
+if(authUser&&authUser.role==='admin')document.getElementById('nav-admin').style.display='';
+else{const na=document.getElementById('nav-admin');if(na)na.style.display='none'}
+buildScale();renderAll();
     if(authUser)renderAdminPanel('overview');
   </script>
 </body>
