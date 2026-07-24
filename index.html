@@ -259,6 +259,12 @@
           <button class="btn secondary plan-goal-btn" data-goal="half">21,1 км</button>
           <button class="btn secondary plan-goal-btn" data-goal="marathon">42,2 км</button>
         </div>
+        <div class="section-title" style="margin-top:20px;margin-bottom:8px"><h2>Объём недели</h2></div>
+        <div class="grid" style="grid-template-columns:repeat(3,1fr);gap:8px">
+          <button class="btn secondary plan-volume-btn" data-volume="40">40 км / нед</button>
+          <button class="btn secondary plan-volume-btn" data-volume="70">70 км / нед</button>
+          <button class="btn secondary plan-volume-btn" data-volume="90">90+ км / нед</button>
+        </div>
         <div id="plan-info" style="margin-top:12px"></div>
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn" id="generate-plan-btn">Сгенерировать план</button><button class="btn secondary" id="clear-plan-btn">Очистить план</button></div>
         <div id="plan-weeks" style="margin-top:24px"></div>
@@ -457,8 +463,9 @@
     const GOAL_LABELS = { '5k': '5 км', '10k': '10 км', 'half': '21,1 км', 'marathon': '42,2 км' };
     const GOAL_DIST = { '5k': 5, '10k': 10, 'half': 21.1, 'marathon': 42.2 };
     let selectedGoal = state.profile?.goal || null;
+    let selectedVolume = state.profile?.weeklyVolume || 70;
 
-    function generatePlan(goal) {
+    function generatePlan(goal, volume) {
       const weeks = PLAN_WEEKS[goal];
       const goalDist = GOAL_DIST[goal];
       const z = getZones();
@@ -466,11 +473,27 @@
       const z2 = z.zones[1][0]+'–'+z.zones[1][1];
       const z3 = z.zones[2][0]+'–'+z.zones[2][1];
       const z4 = z.zones[3][0]+'–'+z.zones[3][1];
-      const base = { '5k': { long: 6, easy: 4, tempo: 3, interval: 3 },
-                     '10k': { long: 9, easy: 5, tempo: 4, interval: 4 },
-                     'half': { long: 15, easy: 6, tempo: 5, interval: 4 },
-                     'marathon': { long: 22, easy: 7, tempo: 6, interval: 5 } }[goal];
-      const plan = { goal, weeks: [], created: new Date().toISOString() };
+      
+      // Base weekly volumes for different goals
+      const baseVolumes = {
+        '5k': { 40: { long: 8, easy: 6, tempo: 5, interval: 4 },
+                70: { long: 12, easy: 8, tempo: 7, interval: 6 },
+                90: { long: 15, easy: 10, tempo: 9, interval: 8 } },
+        '10k': { 40: { long: 10, easy: 7, tempo: 6, interval: 5 },
+                 70: { long: 15, easy: 10, tempo: 8, interval: 7 },
+                 90: { long: 18, easy: 12, tempo: 10, interval: 9 } },
+        'half': { 40: { long: 12, easy: 8, tempo: 7, interval: 6 },
+                  70: { long: 18, easy: 12, tempo: 10, interval: 8 },
+                  90: { long: 22, easy: 14, tempo: 12, interval: 10 } },
+        'marathon': { 40: { long: 15, easy: 10, tempo: 8, interval: 6 },
+                      70: { long: 22, easy: 14, tempo: 11, interval: 9 },
+                      90: { long: 28, easy: 18, tempo: 14, interval: 11 } }
+      };
+      
+      const volKey = volume >= 90 ? 90 : volume >= 70 ? 70 : 40;
+      const base = baseVolumes[goal][volKey];
+      
+      const plan = { goal, weeks: [], created: new Date().toISOString(), weeklyVolume: volKey };
       const today = new Date(); today.setHours(0,0,0,0);
       const startMon = new Date(today); startMon.setDate(today.getDate() - ((today.getDay()+6)%7));
       const days = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
@@ -502,9 +525,9 @@ function renderPlanInfo() {
       if (!el) return;
       if (state.plan) {
         const p = state.plan;
-        el.innerHTML = `<div class="notice" style="margin-top:10px"><span>✓</span><div><b>Активный план: ${GOAL_LABELS[p.goal] || p.goal}</b><br>${p.weeks.length} недель · Создан ${new Date(p.created).toLocaleDateString('ru-RU')}</div></div>`;
+        el.innerHTML = `<div class="notice" style="margin-top:10px"><span>✓</span><div><b>Активный план: ${GOAL_LABELS[p.goal] || p.goal}</b> · ${p.weeklyVolume} км/нед<br>${p.weeks.length} недель · Создан ${new Date(p.created).toLocaleDateString('ru-RU')}</div></div>`;
       } else {
-        el.innerHTML = `<p class="tiny" style="color:var(--muted)">План не создан. Выбери цель и нажми «Сгенерировать план».</p>`;
+        el.innerHTML = `<p class="tiny" style="color:var(--muted)">План не создан. Выбери цель и объём, нажми «Сгенерировать план».</p>`;
       }
     }
 
@@ -537,15 +560,24 @@ function renderPlanInfo() {
         });
         if (btn.dataset.goal === selectedGoal) btn.classList.add('selected');
       });
+      document.querySelectorAll('.plan-volume-btn').forEach(btn => {
+        btn.addEventListener('click', () => {
+          document.querySelectorAll('.plan-volume-btn').forEach(b => b.classList.remove('selected'));
+          btn.classList.add('selected');
+          selectedVolume = parseInt(btn.dataset.volume, 10);
+        });
+        if (parseInt(btn.dataset.volume, 10) === selectedVolume) btn.classList.add('selected');
+      });
       document.getElementById('generate-plan-btn')?.addEventListener('click', () => {
         if (!selectedGoal) { toast('Выбери цель (5к/10к/21.1/42.2)'); return; }
-        state.plan = generatePlan(selectedGoal);
+        state.plan = generatePlan(selectedGoal, selectedVolume);
         state.profile.goal = selectedGoal;
+        state.profile.weeklyVolume = selectedVolume;
         save();
         renderPlanInfo();
         renderPlanWeeks();
         renderDashboard();
-        toast(`План на ${GOAL_LABELS[selectedGoal]} создан (${state.plan.weeks.length} недель)`);
+        toast(`План на ${GOAL_LABELS[selectedGoal]} (${selectedVolume} км/нед) создан (${state.plan.weeks.length} недель)`);
       });
       document.getElementById('clear-plan-btn')?.addEventListener('click', () => {
         delete state.plan;
