@@ -207,8 +207,8 @@
       <h1>Беговой ритм</h1>
       <p class="subtitle">Войдите, чтобы продолжить</p>
       <div class="auth-error" id="auth-error"></div>
-      <label>Email<input id="auth-email" type="email" placeholder="sakupovrizat4@gmail.com" /></label>
-      <label>Пароль<input id="auth-pw" type="password" placeholder="Введите пароль" /></label>
+      <label>Email<input id="auth-email" type="email" placeholder="sakupovrizat4@gmail.com" autocomplete="off" /></label>
+      <label>Пароль<input id="auth-pw" type="password" placeholder="Введите пароль" autocomplete="off" /></label>
       <button class="btn" id="auth-btn">Войти</button>
       <div class="auth-links"><a id="auth-toggle">Нет аккаунта? Зарегистрироваться</a></div>
     </div>
@@ -374,6 +374,8 @@
     seedUser();
     let authUser=doAuth();
     if(!authUser){document.getElementById('app').style.display='none'}
+    document.getElementById('auth-email').value='';
+    document.getElementById('auth-pw').value='';
     document.getElementById('auth-toggle').addEventListener('click',function(){this.textContent=this.textContent.includes('Нет')?'Уже есть аккаунт? Войти':'Нет аккаунта? Зарегистрироваться'});
     document.getElementById('auth-btn').addEventListener('click',function(){const em=document.getElementById('auth-email').value,pw=document.getElementById('auth-pw').value,err=document.getElementById('auth-error');if(!em||!pw){err.textContent='Заполните все поля';err.style.display='block';return}const users=getUsers();const reg=document.getElementById('auth-toggle').textContent.includes('Уже');if(reg){if(users.find(u=>u.email===em)){err.textContent='Email уже зарегистрирован';err.style.display='block';return}const u={id:'u'+Date.now(),name:em.split('@')[0],email:em,password:hashPw(pw),role:'user'};users.push(u);saveUsers(users);saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Аккаунт создан! Добро пожаловать.')}else{const u=users.find(x=>x.email===em);if(!u||u.password!==hashPw(pw)){err.textContent='Неверный email или пароль';err.style.display='block';return}saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Добро пожаловать, '+u.name+'!')}});
     document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-btn').click()});
