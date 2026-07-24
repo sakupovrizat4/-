@@ -177,7 +177,7 @@
     .scale label { display:grid; place-items:center; height:34px; background:#f0f3f0; border-radius:7px; cursor:pointer; color:#58675e; font-size:13px; }
     .scale input:checked + label { background:var(--forest); color:#fff; }
     .choice-set { display:flex; flex-wrap:wrap; gap:7px; }
-    .choice-set input { display:none; }
+.choice-set input { display:none; }
     .choice-set label { padding:8px 10px; background:#f0f3f0; border-radius:8px; cursor:pointer; font-size:12px; }
     .choice-set input:checked + label { background:#dcefd8; color:#174d3e; }
     .modal-fields { display:grid; gap:15px; }
@@ -187,36 +187,8 @@
     @media (max-width:1020px) { .stats{grid-template-columns:repeat(2,1fr)} .dashboard-grid,.workout-layout,.progress-grid,.zone-layout,.profile-grid {grid-template-columns:1fr} }
     @media (max-width:760px) { .app{display:block} aside{height:auto; position:static; padding:14px; flex-direction:row; align-items:center; overflow:auto; gap:12px} .brand{padding:0; white-space:nowrap; font-size:17px}.nav{display:flex; gap:3px}.nav button{padding:8px}.nav button .text{display:none}.aside-bottom{display:none}main{padding:24px 17px 45px}.topline{display:block}.topline .btn{margin-top:15px}.stats,.method-grid,.recovery-grid{grid-template-columns:1fr}.filters{min-width:0;grid-template-columns:1fr 1fr}.history-row{grid-template-columns:60px 1fr auto}.history-row > :nth-child(3),.history-row > :nth-child(4),.history-row > :nth-child(5){display:none}.plan-details,.form-grid,.form-grid.three,.calc-result{grid-template-columns:1fr}.zone-row{grid-template-columns:33px 1fr auto}.zone-row span{display:none}.achievement-list{grid-template-columns:1fr}.chart-card{min-height:240px} }
   </style>
-  <style>
-    .auth-screen{min-height:100vh;display:flex;align-items:center;justify-content:center;background:var(--paper);position:fixed;inset:0;z-index:100}
-    .auth-box{background:var(--card);border-radius:17px;box-shadow:var(--shadow);padding:32px;width:min(420px,92vw);border:1px solid var(--line)}
-    .auth-box .brand-mark{width:48px;height:48px;font-size:22px;margin:0 auto 16px;display:grid;place-items:center;border-radius:14px;color:#fff;background:var(--forest);font-weight:900}
-    .auth-box h1{text-align:center;font-size:24px;margin:0 0 4px}
-    .auth-box .subtitle{text-align:center;color:var(--muted);font-size:13px;margin-bottom:24px}
-    .auth-box label{display:grid;gap:5px;color:#4c5b52;font-size:13px;font-weight:700;margin-bottom:12px}
-    .auth-box .btn{width:100%;margin-top:8px}
-    .auth-box .auth-links{text-align:center;margin-top:16px;font-size:13px}
-    .auth-box .auth-links a{color:var(--forest);font-weight:700;cursor:pointer;text-decoration:none}
-    .auth-box .auth-error{background:#fff0eb;color:#b94d35;padding:10px;border-radius:9px;font-size:13px;margin-bottom:12px;display:none}
-    .auth-pw-wrap{position:relative;display:flex;align-items:center}
-    .auth-pw-wrap input{flex:1;padding-right:44px}
-    .pw-toggle{position:absolute;right:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px}
-    .pw-toggle:hover{color:var(--forest)}
-  </style>
 </head>
 <body>
-  <div class="auth-screen" id="auth-screen">
-    <div class="auth-box">
-      <div class="brand-mark">R</div>
-      <h1>Беговой ритм</h1>
-      <p class="subtitle">Войдите, чтобы продолжить</p>
-      <div class="auth-error" id="auth-error"></div>
-      <label>Email<input id="auth-email" type="email" placeholder="sakupovrizat4@gmail.com" autocomplete="off" /></label>
-      <label>Пароль<div class="auth-pw-wrap"><input id="auth-pw" type="password" placeholder="Введите пароль" autocomplete="off" /><button type="button" class="pw-toggle" id="pw-toggle" aria-label="Показать пароль">👁</button></div></label>
-      <button class="btn" id="auth-btn">Войти</button>
-      <div class="auth-links"><a id="auth-toggle">Нет аккаунта? Зарегистрироваться</a></div>
-    </div>
-  </div>
   <div class="app" id="app">
     <aside>
       <div class="brand"><span class="brand-mark">R</span> Беговой ритм</div>
@@ -232,10 +204,6 @@
         <button data-page="admin" id="nav-admin"><span class="icon">⚙</span><span class="text">Админ-панель</span></button>
       </nav>
       <div class="aside-bottom"><span class="profile-dot"></span><span id="aside-user">Rizat Sakupov</span> · план на 10 км<br><span class="tiny">Неделя 6 из 12</span></div>
-      <div class="auth-panel" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:6px">
-        <button class="btn secondary small" id="logout-btn">🚪 Выйти</button>
-        <button class="btn light small" id="switch-account-btn">👤 Сменить аккаунт</button>
-      </div>
     </aside>
 
     <main>
@@ -377,25 +345,8 @@
     function seedUser(){if(getUsers().length===0){saveUsers([{id:'u1',name:'Rizat Sakupov',email:'sakupovrizat4@gmail.com',password:hashPw('48526480r'),role:'admin'}]); console.log('User seeded')}}
     function doAuth(){const s=getSession();if(s){const u=getUsers().find(x=>x.email===s.email);if(u){document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';return u}}return null}
     seedUser();
-    let authUser=doAuth();
-    if(!authUser){
-        // Auto-login admin for testing
-        const users=getUsers();
-        const admin=users.find(u=>u.email==='sakupovrizat4@gmail.com');
-        if(admin){
-            authUser=admin;
-            saveSession({email:admin.email});
-        }
-        document.getElementById('auth-screen').style.display='none';
-        document.getElementById('app').style.display='grid';
-    }
-    document.getElementById('auth-email').value='';
-    document.getElementById('auth-pw').value='';
-    document.getElementById('auth-toggle').addEventListener('click',function(){this.textContent=this.textContent.includes('Нет')?'Уже есть аккаунт? Войти':'Нет аккаунта? Зарегистрироваться'});
-    document.getElementById('auth-btn').addEventListener('click',function(){console.log('auth-btn clicked');const em=document.getElementById('auth-email').value,pw=document.getElementById('auth-pw').value,err=document.getElementById('auth-error');if(!em||!pw){err.textContent='Заполните все поля';err.style.display='block';return}const users=getUsers();const reg=document.getElementById('auth-toggle').textContent.includes('Уже');if(reg){if(users.find(u=>u.email===em)){err.textContent='Email уже зарегистрирован';err.style.display='block';return}const u={id:'u'+Date.now(),name:em.split('@')[0],email:em,password:hashPw(pw),role:'user'};users.push(u);saveUsers(users);saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Аккаунт создан! Добро пожаловать.')}else{const u=users.find(x=>x.email===em);if(!u){err.textContent='Пользователь не найден';err.style.display='block';return}if(u.password!==hashPw(pw)){err.textContent='Неверный пароль';err.style.display='block';return}saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Добро пожаловать, '+u.name+'!')}});
-    document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-btn').click()});
-    document.getElementById('pw-toggle')?.addEventListener('click',function(){const i=document.getElementById('auth-pw');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'});
-    console.log('Auth listeners attached');
+    let authUser = {name:'Rizat Sakupov', email:'sakupovrizat4@gmail.com', role:'admin'};
+    console.log('Auth disabled - auto logged in as admin');
     /* ===== APP ===== */
     const key = 'running-rhythm-v1';
     const initialWorkouts = [
