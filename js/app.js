@@ -166,6 +166,7 @@ const App = {
             case 'progress': content.innerHTML = Analytics.renderProgressSection(Auth.currentUser?.id); break;
             case 'zones': content.innerHTML = Pages.renderZones(); break;
             case 'methods': content.innerHTML = Pages.renderMethods(); break;
+            case 'plans': content.innerHTML = TrainingPlans.renderPage(); break;
             case 'run': content.innerHTML = Pages.renderRunMode(); break;
             case 'routes': content.innerHTML = Pages.renderRoutes(); break;
             case 'cross-training': content.innerHTML = Pages.renderCrossTraining(); break;

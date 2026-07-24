@@ -16,10 +16,11 @@ const Pages = {
         const quickActions = `
             <div class="card-grid">
                 <button class="btn btn-primary" onclick="App.showAddTraining()">➕ Добавить тренировку</button>
-                <button class="btn btn-secondary" onclick="App.navigate('integrations')">🔗 Подключить Strava</button>
+                <button class="btn btn-secondary" onclick="App.navigate('plans')" style="background:linear-gradient(135deg,#fef3c7,#fde68a);color:#92400e;border-color:#fcd34d">📋 Планы подготовки</button>
                 <button class="btn btn-secondary" onclick="App.navigate('run')">▶️ Бег сейчас</button>
                 <button class="btn btn-secondary" onclick="App.showWellbeingForm()">💚 Оценить самочувствие</button>
             </div>`;
+
 
         const nextTrainingHtml = nextTraining ? `
             <div class="training-card upcoming" onclick="App.navigate('calendar')">
