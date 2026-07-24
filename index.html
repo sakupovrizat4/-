@@ -624,6 +624,31 @@ function renderPlanInfo() {
       });
     }
     initPlanButtons();
+    $$('.nav button').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.page)));
+    $$('[data-page-target]').forEach(b=>b.addEventListener('click',()=>showPage(b.dataset.pageTarget)));
+    $$('[data-action="add-workout"]').forEach(b=>b.addEventListener('click',()=>{ $('#workout-form [name="date"]').value=new Date().toISOString().slice(0,10);openModal('workout-modal');}));
+    $$('[data-action="complete-plan"]').forEach(b=>b.addEventListener('click',()=>openRating({id:Date.now(),date:new Date().toISOString().slice(0,10),type:'Лёгкий бег с ускорениями',distance:7,minutes:43,pace:'6:08',avgHr:138,maxHr:150,zone:2,source:'manual'})));
+    $$('[data-action="skip-plan"]').forEach(b=>b.addEventListener('click',()=>toast('Тренировка перенесена на завтра. План сохранит баланс нагрузки.')));
+    $$('[data-close-modal]').forEach(b=>b.addEventListener('click',closeModals));
+    $$('.modal-backdrop').forEach(x=>x.addEventListener('click',e=>{if(e.target===x)closeModals()}));
+    $('#workout-form').addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));const w={id:Date.now(),date:d.date,type:d.type,distance:+d.distance,minutes:+d.minutes,pace:pace(+d.distance,+d.minutes),avgHr:+d.avgHr||null,zone:+d.zone,source:d.source};closeModals();openRating(w);});
+    $('#rating-form').addEventListener('submit',e=>{e.preventDefault();const d=Object.fromEntries(new FormData(e.currentTarget));const w={...pendingWorkout,feeling:d.feeling,effort:+d.effort,energy:+d.energy,sleep:+d.sleep,pain:d.pain,painArea:d.painArea,comment:d.comment};const existing=state.workouts.findIndex(x=>x.id===w.id);if(existing>=0)state.workouts[existing]=w;else state.workouts.push(w);save();closeModals();renderAll();const needsCare=w.pain!=='нет'||w.feeling==='Плохо'||w.effort>=8;toast(needsCare?'Оценка сохранена. Следующую сессию лучше облегчить или перенести.':'Оценка сохранена. Следующая тренировка остаётся по плану.');});
+    ['#history-search','#history-type','#history-zone','#history-feeling'].forEach(x=>$(x).addEventListener('input',renderHistory));
+    document.addEventListener('click',e=>{const id=e.target.dataset.remove;if(id){state.workouts=state.workouts.filter(w=>String(w.id)!==id);save();renderAll();toast('Тренировка удалена.')}});
+    $$('.metric-tabs button').forEach(b=>b.addEventListener('click',()=>{$$('.metric-tabs button').forEach(x=>x.classList.remove('active'));b.classList.add('active');renderProgress();}));
+    ['age','rhr','hrmax','threshold'].forEach(id=>$('#'+id).addEventListener('input',()=>{state.profile.age=$('#age').value;state.profile.rhr=$('#rhr').value;state.profile.max=$('#hrmax').value;state.profile.threshold=$('#threshold').value;renderZones();}));
+    $$('input[name="calc"]').forEach(i=>i.addEventListener('change',()=>{state.profile.method=i.value;renderZones();}));
+    $('[data-action="save-zones"]').addEventListener('click',()=>{save();toast('Пульсовые зоны сохранены.');});
+    $$('.method').forEach(card=>card.addEventListener('click',()=>{const m=card.dataset.method;if(m==='norwegian'&&state.workouts.length<12){toast('Norwegian Double Threshold скрыт: сначала нужна стабильная тренировочная база.');}state.method=m;$$('.method').forEach(x=>x.classList.toggle('selected',x===card));save();toast(`Выбрана методика: ${card.querySelector('h2').textContent.trim()}`)}));
+    $('#strava-connect').addEventListener('click',()=>{state.strava=true;save();renderStrava();toast('Демо: Strava подключена. Реальный OAuth требует серверной настройки.');});
+    $('#strava-disconnect').addEventListener('click',()=>{state.strava=false;save();renderStrava();toast('Аккаунт Strava отключён. Импортированные записи сохранены в истории.');});
+    $('#strava-sync').addEventListener('click',()=>{const w={id:Date.now(),date:new Date().toISOString().slice(0,10),type:'Лёгкий бег',distance:6.8,minutes:41,pace:'6:02',avgHr:137,maxHr:151,zone:2,source:'strava'};state.workouts.push(w);save();renderAll();openRating(w);toast('Импортирована новая пробежка. Добавьте самочувствие и сложность.');});
+    $('#auto-sync').addEventListener('change',e=>{state.autoSync=e.target.checked;save();toast(e.target.checked?'Автосинхронизация включена.':'Оставлена только ручная синхронизация.');});
+    $('#admin-photo-button').addEventListener('click',()=>$('#admin-photo-input').click());
+    $('#admin-photo-input').addEventListener('change',e=>{const file=e.target.files[0];if(!file)return;if(file.size>2*1024*1024){toast('Выберите фото размером до 2 МБ.');return}const reader=new FileReader();reader.onload=()=>{state.admin.photo=reader.result;save();renderAdmin();toast('Фото администратора сохранено.');};reader.readAsDataURL(file);});
+    $('#admin-links-save').addEventListener('click',()=>{state.admin.instagram=$('#admin-instagram').value.trim();state.admin.strava=$('#admin-strava').value.trim();save();renderAdmin();toast('Публичные ссылки сохранены.');});
+    buildScale();
+    renderAll();
   </script>
 </body>
 </html>
