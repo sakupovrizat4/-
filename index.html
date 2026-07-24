@@ -633,7 +633,7 @@ function renderPlanInfo() {
         });
         if (btn.dataset.method === selectedMethod) btn.classList.add('selected');
       });
-      document.getElementById('generate-plan-btn')?.addEventListener('click', () => {
+      document.querySelectorAll('#generate-plan-btn').forEach(btn => btn.addEventListener('click', () => {
         if (!selectedGoal) { toast('Выбери цель (5к/10к/21.1/42.2)'); return; }
         state.plan = generatePlan(selectedGoal, selectedVolume, selectedMethod);
         state.profile.goal = selectedGoal;
@@ -644,8 +644,8 @@ function renderPlanInfo() {
         renderPlanWeeks();
         renderDashboard();
         toast(`План на ${GOAL_LABELS[selectedGoal]} (${selectedVolume} км/нед, ${selectedMethod}) создан (${state.plan.weeks.length} недель)`);
-      });
-      document.getElementById('clear-plan-btn')?.addEventListener('click', () => {
+      }));
+      document.querySelectorAll('#clear-plan-btn').forEach(btn => btn.addEventListener('click', () => {
         delete state.plan;
         save();
         renderPlanInfo();
