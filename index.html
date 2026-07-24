@@ -198,6 +198,10 @@
     .auth-box .auth-links{text-align:center;margin-top:16px;font-size:13px}
     .auth-box .auth-links a{color:var(--forest);font-weight:700;cursor:pointer;text-decoration:none}
     .auth-box .auth-error{background:#fff0eb;color:#b94d35;padding:10px;border-radius:9px;font-size:13px;margin-bottom:12px;display:none}
+    .auth-pw-wrap{position:relative;display:flex;align-items:center}
+    .auth-pw-wrap input{flex:1;padding-right:44px}
+    .pw-toggle{position:absolute;right:8px;background:none;border:none;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:4px}
+    .pw-toggle:hover{color:var(--forest)}
   </style>
 </head>
 <body>
@@ -208,7 +212,7 @@
       <p class="subtitle">Войдите, чтобы продолжить</p>
       <div class="auth-error" id="auth-error"></div>
       <label>Email<input id="auth-email" type="email" placeholder="sakupovrizat4@gmail.com" autocomplete="off" /></label>
-      <label>Пароль<input id="auth-pw" type="password" placeholder="Введите пароль" autocomplete="off" /></label>
+      <label>Пароль<div class="auth-pw-wrap"><input id="auth-pw" type="password" placeholder="Введите пароль" autocomplete="off" /><button type="button" class="pw-toggle" id="pw-toggle" aria-label="Показать пароль">👁</button></div></label>
       <button class="btn" id="auth-btn">Войти</button>
       <div class="auth-links"><a id="auth-toggle">Нет аккаунта? Зарегистрироваться</a></div>
     </div>
@@ -379,6 +383,7 @@
     document.getElementById('auth-toggle').addEventListener('click',function(){this.textContent=this.textContent.includes('Нет')?'Уже есть аккаунт? Войти':'Нет аккаунта? Зарегистрироваться'});
     document.getElementById('auth-btn').addEventListener('click',function(){const em=document.getElementById('auth-email').value,pw=document.getElementById('auth-pw').value,err=document.getElementById('auth-error');if(!em||!pw){err.textContent='Заполните все поля';err.style.display='block';return}const users=getUsers();const reg=document.getElementById('auth-toggle').textContent.includes('Уже');if(reg){if(users.find(u=>u.email===em)){err.textContent='Email уже зарегистрирован';err.style.display='block';return}const u={id:'u'+Date.now(),name:em.split('@')[0],email:em,password:hashPw(pw),role:'user'};users.push(u);saveUsers(users);saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Аккаунт создан! Добро пожаловать.')}else{const u=users.find(x=>x.email===em);if(!u){err.textContent='Пользователь не найден';err.style.display='block';return}if(u.password!==hashPw(pw)){err.textContent='Неверный пароль';err.style.display='block';return}saveSession({email:em});authUser=u;document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';renderAll();toast('Добро пожаловать, '+u.name+'!')}});
     document.getElementById('auth-pw').addEventListener('keydown',function(e){if(e.key==='Enter')document.getElementById('auth-btn').click()});
+    document.getElementById('pw-toggle').addEventListener('click',function(){const i=document.getElementById('auth-pw');i.type=i.type==='password'?'text':'password';this.textContent=i.type==='password'?'👁':'🙈'});
     /* ===== APP ===== */
     const key = 'running-rhythm-v1';
     const initialWorkouts = [
