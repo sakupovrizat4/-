@@ -378,7 +378,17 @@
     function doAuth(){const s=getSession();if(s){const u=getUsers().find(x=>x.email===s.email);if(u){document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';return u}}return null}
     seedUser();
     let authUser=doAuth();
-    if(!authUser){document.getElementById('app').style.display='none'}
+    if(!authUser){
+        // Auto-login admin for testing
+        const users=getUsers();
+        const admin=users.find(u=>u.email==='sakupovrizat4@gmail.com');
+        if(admin){
+            authUser=admin;
+            saveSession({email:admin.email});
+        }
+        document.getElementById('auth-screen').style.display='none';
+        document.getElementById('app').style.display='grid';
+    }
     document.getElementById('auth-email').value='';
     document.getElementById('auth-pw').value='';
     document.getElementById('auth-toggle').addEventListener('click',function(){this.textContent=this.textContent.includes('Нет')?'Уже есть аккаунт? Войти':'Нет аккаунта? Зарегистрироваться'});
