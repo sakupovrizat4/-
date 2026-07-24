@@ -366,6 +366,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
+    console.log('Script starting...');
     /* ===== AUTH ===== */
     const br_users_key='br_users', br_session_key='br_session';
     function hashPw(s){let h=0;for(let i=0;i<s.length;i++)h=((h<<5)-h+s.charCodeAt(i))|0;return'h_'+Math.abs(h).toString(36)}
@@ -373,7 +374,7 @@
     function saveUsers(u){localStorage.setItem(br_users_key,JSON.stringify(u))}
     function getSession(){try{return JSON.parse(localStorage.getItem(br_session_key))}catch{return null}}
     function saveSession(s){localStorage.setItem(br_session_key,JSON.stringify(s))}
-    function seedUser(){if(getUsers().length===0){saveUsers([{id:'u1',name:'Rizat Sakupov',email:'sakupovrizat4@gmail.com',password:hashPw('48526480r'),role:'admin'}])}}
+    function seedUser(){if(getUsers().length===0){saveUsers([{id:'u1',name:'Rizat Sakupov',email:'sakupovrizat4@gmail.com',password:hashPw('48526480r'),role:'admin'}]); console.log('User seeded')}}
     function doAuth(){const s=getSession();if(s){const u=getUsers().find(x=>x.email===s.email);if(u){document.getElementById('auth-screen').style.display='none';document.getElementById('app').style.display='grid';return u}}return null}
     seedUser();
     let authUser=doAuth();
