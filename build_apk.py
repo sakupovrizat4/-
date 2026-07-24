@@ -814,6 +814,7 @@ def build_apk_package(output_apk_path):
             ('js/analytics.js',     'assets/js/analytics.js'),
             ('js/admin.js',         'assets/js/admin.js'),
             ('js/pages.js',         'assets/js/pages.js'),
+            ('js/plans.js',         'assets/js/plans.js'),
             ('js/app.js',           'assets/js/app.js'),
             ('assets/icon-192.png', 'assets/assets/icon-192.png'),
             ('assets/icon-512.png', 'assets/assets/icon-512.png'),
