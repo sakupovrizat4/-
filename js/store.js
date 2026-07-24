@@ -1,7 +1,24 @@
 const Store = {
     getTrainings(userId) {
         try {
-            return JSON.parse(localStorage.getItem('br_trainings_' + userId) || '[]');
+            let data = JSON.parse(localStorage.getItem('br_trainings_' + userId) || '[]');
+            if (data.length === 0 && userId) {
+                const today = new Date();
+                const d1 = new Date(today); d1.setDate(today.getDate() - 1);
+                const d2 = new Date(today); d2.setDate(today.getDate() - 3);
+                const d3 = new Date(today); d3.setDate(today.getDate() - 5);
+                const d4 = new Date(today); d4.setDate(today.getDate() - 7);
+                const d5 = new Date(today); d5.setDate(today.getDate() - 10);
+                data = [
+                    { id: 't_seed_1', date: d1.toISOString().slice(0,10), type: 'easy', distance: 6.4, duration: 39, avgHR: 136, maxHR: 151, status: 'completed', comment: 'Лёгкий ровный бег в зоне 2', timeInZones: [10, 25, 4, 0, 0] },
+                    { id: 't_seed_2', date: d2.toISOString().slice(0,10), type: 'long', distance: 10.5, duration: 68, avgHR: 142, maxHR: 158, status: 'completed', comment: 'Длительная пробежка в комфортном темпе', timeInZones: [15, 45, 8, 0, 0] },
+                    { id: 't_seed_3', date: d3.toISOString().slice(0,10), type: 'intervals', distance: 5.8, duration: 35, avgHR: 155, maxHR: 174, status: 'completed', comment: '6 × 400м ускорения', timeInZones: [5, 10, 10, 8, 2] },
+                    { id: 't_seed_4', date: d4.toISOString().slice(0,10), type: 'easy', distance: 5.0, duration: 32, avgHR: 134, maxHR: 146, status: 'completed', comment: 'Восстановительная пробежка', timeInZones: [12, 20, 0, 0, 0] },
+                    { id: 't_seed_5', date: d5.toISOString().slice(0,10), type: 'tempo', distance: 7.2, duration: 42, avgHR: 160, maxHR: 172, status: 'completed', comment: 'Темповый бег на пороге ПАНО', timeInZones: [5, 12, 20, 5, 0] }
+                ];
+                this.saveTrainings(userId, data);
+            }
+            return data;
         } catch { return []; }
     },
 
@@ -39,7 +56,11 @@ const Store = {
 
     getPlan(userId) {
         try {
-            return JSON.parse(localStorage.getItem('br_plan_' + userId) || 'null');
+            let plan = JSON.parse(localStorage.getItem('br_plan_' + userId) || 'null');
+            if (!plan && userId) {
+                plan = this.generatePlan(userId);
+            }
+            return plan;
         } catch { return null; }
     },
 

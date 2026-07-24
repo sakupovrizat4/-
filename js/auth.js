@@ -2,9 +2,18 @@ const Auth = {
     init() {
         this.seedDatabase();
         this.currentUser = this.loadSession();
+        if (!this.currentUser) {
+            const users = this.getUsers();
+            if (users.length > 0) {
+                this.saveSession({ id: users[0].id, email: users[0].email });
+                this.currentUser = this.loadSession();
+            }
+        }
         if (this.currentUser) {
-            document.getElementById('auth-screen').style.display = 'none';
-            document.getElementById('app-main').style.display = 'flex';
+            const authScr = document.getElementById('auth-screen');
+            const appMn = document.getElementById('app-main');
+            if (authScr) authScr.style.display = 'none';
+            if (appMn) appMn.style.display = 'flex';
         }
     },
 

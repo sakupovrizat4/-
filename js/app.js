@@ -4,17 +4,69 @@ const App = {
     runTime: 0,
     runDistance: 0,
     runActive: false,
+    deferredPrompt: null,
 
     init() {
         Auth.init();
-        if (Auth.currentUser) {
-            const user = Auth.getUser();
-            if (user && !user.profile?.age) {
-                this.showForm('profile');
-                return;
+        this.initPWA();
+        const authScr = document.getElementById('auth-screen');
+        const appMn = document.getElementById('app-main');
+        if (authScr) authScr.style.display = 'none';
+        if (appMn) appMn.style.display = 'flex';
+        this.updateSidebar();
+        this.navigate('dashboard');
+    },
+
+    initPWA() {
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./sw.js').then(() => {
+                console.log('PWA Service Worker ready');
+            }).catch(err => console.log('SW reg error:', err));
+        }
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+        });
+    },
+
+    installPWA() {
+        if (this.deferredPrompt) {
+            this.deferredPrompt.prompt();
+            this.deferredPrompt.userChoice.then((choiceResult) => {
+                if (choiceResult.outcome === 'accepted') {
+                    this.toast('Приложение успешно устанавливается!', 'success');
+                }
+                this.deferredPrompt = null;
+            });
+        } else {
+            const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+            if (isIOS) {
+                this.showModal(`
+                    <h2 style="margin-bottom:1rem">📲 Установка на iPhone / iPad</h2>
+                    <p style="margin-bottom:1rem;color:var(--gray-600);line-height:1.6">
+                        Чтобы установить <b>Беговой ритм</b> как приложение на ваш iPhone:
+                    </p>
+                    <ol style="padding-left:1.25rem;line-height:1.8;color:var(--gray-700);font-size:0.95rem">
+                        <li>Нажмите кнопку <b>«Поделиться»</b> (<span style="font-size:1.1rem">⎋</span>) внизу экрана в Safari.</li>
+                        <li>Прокрутите вниз и выберите <b>«На экран «Домой»»</b> (<span style="font-size:1.1rem">➕</span>).</li>
+                        <li>Нажмите <b>«Добавить»</b> вверху справа.</li>
+                    </ol>
+                    <button class="btn btn-primary btn-full" style="margin-top:1.25rem" onclick="App.closeModal()">Понятно</button>
+                `);
+            } else {
+                this.showModal(`
+                    <h2 style="margin-bottom:1rem">📲 Установка приложения</h2>
+                    <p style="margin-bottom:1rem;color:var(--gray-600);line-height:1.6">
+                        Чтобы установить <b>Беговой ритм</b> на рабочий стол вашего устройства:
+                    </p>
+                    <ol style="padding-left:1.25rem;line-height:1.8;color:var(--gray-700);font-size:0.95rem">
+                        <li>Нажмите меню браузера (<b>⋮</b> или <b>≡</b>).</li>
+                        <li>Выберите <b>«Установить приложение»</b> или <b>«Добавить на главный экран»</b>.</li>
+                    </ol>
+                    <button class="btn btn-primary btn-full" style="margin-top:1.25rem" onclick="App.closeModal()">Понятно</button>
+                `);
             }
-            this.updateSidebar();
-            this.navigate('dashboard');
         }
     },
 
@@ -95,11 +147,10 @@ const App = {
 
     logout() {
         Auth.logout();
-        document.getElementById('app-main').style.display = 'none';
-        document.getElementById('auth-screen').style.display = 'flex';
-        this.showForm('login');
-        document.getElementById('login-email').value = '';
-        document.getElementById('login-password').value = '';
+        Auth.init();
+        this.updateSidebar();
+        this.navigate('dashboard');
+        this.toast('Сессия обновлена', 'info');
     },
 
     navigate(page) {
@@ -636,4 +687,8 @@ const App = {
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => App.init());
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => App.init());
+} else {
+    App.init();
+}
